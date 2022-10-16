@@ -1,5 +1,6 @@
 package br.com.ulteriorti.parking.service;
 
+import br.com.ulteriorti.parking.exception.ParkingNotFoundException;
 import br.com.ulteriorti.parking.model.Parking;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,11 @@ public class ParkingService {
         return parkingMap.values().stream().collect(Collectors.toList());
     }
     public Parking findById(String id){
-        return parkingMap.get(id);
+        Parking  parking = parkingMap.get(id);
+        if(parking == null){
+            throw new ParkingNotFoundException(id);
+        }
+        return parking;
     }
     public Parking create (Parking parkingCreate){
         String uuid = getUUID();
@@ -38,5 +43,19 @@ public class ParkingService {
         parkingCreate.setEntryDate(LocalDateTime.now());
         parkingMap.put(uuid,parkingCreate);
         return parkingCreate;
+    }
+
+    public void delete(String id) {
+        Parking parking = findById(id);
+        parkingMap.remove(id);
+
+    }
+
+    public Parking update(String id,Parking parkingCreate) {
+        Parking parking = findById(id);
+        parking.setColor(parkingCreate.getColor());
+        parkingMap.replace(id,parking);
+        return parking;
+
     }
 }
