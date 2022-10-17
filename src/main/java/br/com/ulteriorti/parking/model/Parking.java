@@ -1,8 +1,11 @@
 package br.com.ulteriorti.parking.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
-
+@Entity
 public class Parking {
+    @Id
     private String id;
     private String license;
     private String state;
@@ -84,5 +87,19 @@ public class Parking {
 
     public void setBill(Double bill) {
         this.bill = bill;
+    }
+
+    @Override
+    public String toString() {
+        return "Parking{" +
+                "id='" + id + '\'' +
+                ", license='" + license + '\'' +
+                ", state='" + state + '\'' +
+                ", model='" + model + '\'' +
+                ", color='" + color + '\'' +
+                ", entryDate=" + entryDate +
+                ", exitDate=" + exitDate +
+                ", bill=" + bill +
+                '}';
     }
 }
