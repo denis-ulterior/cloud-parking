@@ -3,10 +3,13 @@ package br.com.ulteriorti.parking.service;
 import br.com.ulteriorti.parking.exception.ParkingNotFoundException;
 import br.com.ulteriorti.parking.model.Parking;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,33 +18,35 @@ public class ParkingService {
 
     static {
         var id = getUUID();
-        var id1=getUUID();
+        var id1 = getUUID();
         Parking parking = new Parking(id, "DMS-1111", "SC", "CELTA", "PRETO");
         Parking parking1 = new Parking(id1, "DMS-1112", "SP", "CELTA", "VERDE");
         parkingMap.put(id, parking);
-        parkingMap.put(id1,parking1);
+        parkingMap.put(id1, parking1);
     }
 
     private static String getUUID() {
-        return UUID.randomUUID().toString().replace("-","");
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
 
-    public List<Parking> findAll(){
+    public List<Parking> findAll() {
         return parkingMap.values().stream().collect(Collectors.toList());
     }
-    public Parking findById(String id){
-        Parking  parking = parkingMap.get(id);
-        if(parking == null){
+
+    public Parking findById(String id) {
+        Parking parking = parkingMap.get(id);
+        if (parking == null) {
             throw new ParkingNotFoundException(id);
         }
         return parking;
     }
-    public Parking create (Parking parkingCreate){
+
+    public Parking create(Parking parkingCreate) {
         String uuid = getUUID();
         parkingCreate.setId(uuid);
         parkingCreate.setEntryDate(LocalDateTime.now());
-        parkingMap.put(uuid,parkingCreate);
+        parkingMap.put(uuid, parkingCreate);
         return parkingCreate;
     }
 
@@ -51,11 +56,20 @@ public class ParkingService {
 
     }
 
-    public Parking update(String id,Parking parkingCreate) {
+    public Parking update(String id, Parking parkingCreate) {
         Parking parking = findById(id);
         parking.setColor(parkingCreate.getColor());
-        parkingMap.replace(id,parking);
+        parkingMap.replace(id, parking);
         return parking;
 
+    }
+
+    public Parking exit(String id) {
+        Parking parking = findById(id);
+        parking.setExitDate(LocalDateTime.now());
+        Duration duration = Duration.between(parking.getEntryDate(), parking.getExitDate());
+        double diff = Math.abs(duration.toHours());
+        parking.setBill(diff);
+        return parking;
     }
 }
