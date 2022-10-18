@@ -32,6 +32,8 @@ class ParkingControllerIT extends AbstractContainerBase{
         createDTO.setModel("CLIO");
         createDTO.setState("SP");
         RestAssured.given()
+                .when().auth()
+                .basic("ulteriorti","ulteriorti")
                 .when()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(createDTO)
